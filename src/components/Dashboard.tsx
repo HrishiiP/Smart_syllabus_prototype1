@@ -6,6 +6,7 @@ import ProgressOverview from './ProgressOverview';
 import CourseList from './CourseList';
 import TopicManager from './TopicManager';
 import AlertPanel from './AlertPanel';
+import AddCourseModal from './AddCourseModal';
 import { BookOpen, Plus } from 'lucide-react';
 
 interface DashboardProps {
@@ -125,6 +126,17 @@ const Dashboard: React.FC<DashboardProps> = ({ user, onLogout }) => {
     };
   };
 
+  const handleAddCourse = (courseData: Omit<Course, 'id' | 'topics'>) => {
+    const newCourse: Course = {
+      ...courseData,
+      id: Date.now().toString(),
+      topics: []
+    };
+    
+    setCourses(prev => [...prev, newCourse]);
+    setSelectedCourse(newCourse);
+  };
+
   const handleToggleComplete = (topicId: string) => {
     if (!selectedCourse) return;
 
@@ -234,6 +246,13 @@ const Dashboard: React.FC<DashboardProps> = ({ user, onLogout }) => {
           </div>
         </div>
       </main>
+      
+      {/* Add Course Modal */}
+      <AddCourseModal
+        isOpen={showAddCourse}
+        onClose={() => setShowAddCourse(false)}
+        onAddCourse={handleAddCourse}
+      />
     </div>
   );
 };

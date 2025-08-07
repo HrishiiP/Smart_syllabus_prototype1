@@ -1,15 +1,17 @@
 import React, { useState } from 'react';
 import { Course, Topic } from '../types/syllabus';
 import { UserRole } from '../types/user';
+import AddTopicModal from './AddTopicModal';
 import { CheckCircle, Clock, Edit2, Plus, Calendar } from 'lucide-react';
 
 interface TopicManagerProps {
   course: Course;
   onToggleComplete: (topicId: string) => void;
+  onAddTopic: (topic: Omit<Topic, 'id' | 'isCompleted' | 'completedAt'>) => void;
   userRole: UserRole;
 }
 
-const TopicManager: React.FC<TopicManagerProps> = ({ course, onToggleComplete, userRole }) => {
+const TopicManager: React.FC<TopicManagerProps> = ({ course, onToggleComplete, onAddTopic, userRole }) => {
   const [showAddTopic, setShowAddTopic] = useState(false);
 
   const formatDate = (date: Date) => {
@@ -28,6 +30,10 @@ const TopicManager: React.FC<TopicManagerProps> = ({ course, onToggleComplete, u
     if (topic.isCompleted) return 'completed';
     if (currentWeek >= topic.week) return 'current';
     return 'upcoming';
+  };
+
+  const handleAddTopic = (topicData: Omit<Topic, 'id' | 'isCompleted' | 'completedAt'>) => {
+    onAddTopic(topicData);
   };
 
   const groupedTopics = course.topics.reduce((acc, topic) => {
@@ -56,6 +62,14 @@ const TopicManager: React.FC<TopicManagerProps> = ({ course, onToggleComplete, u
           )}
         </div>
       </div>
+      
+      {/* Add Topic Modal */}
+      <AddTopicModal
+        isOpen={showAddTopic}
+        onClose={() => setShowAddTopic(false)}
+        onAddTopic={handleAddTopic}
+        totalWeeks={course.totalWeeks}
+      />
 
       <div className="p-6">
         <div className="space-y-8">
