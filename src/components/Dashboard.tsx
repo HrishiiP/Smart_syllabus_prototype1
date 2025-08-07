@@ -171,6 +171,27 @@ const Dashboard: React.FC<DashboardProps> = ({ user, onLogout }) => {
     } : null);
   };
 
+  const handleAddTopic = (topicData: Omit<Topic, 'id' | 'isCompleted' | 'completedAt'>) => {
+    if (!selectedCourse) return;
+
+    const newTopic: Topic = {
+      ...topicData,
+      id: Date.now().toString(),
+      isCompleted: false
+    };
+
+    setCourses(prev => prev.map(course => 
+      course.id === selectedCourse.id 
+        ? { ...course, topics: [...course.topics, newTopic] }
+        : course
+    ));
+
+    setSelectedCourse(prev => prev ? {
+      ...prev,
+      topics: [...prev.topics, newTopic]
+    } : null);
+  };
+
   const progress = selectedCourse ? calculateProgress(selectedCourse) : null;
 
   return (
@@ -234,6 +255,7 @@ const Dashboard: React.FC<DashboardProps> = ({ user, onLogout }) => {
               <TopicManager 
                 course={selectedCourse}
                 onToggleComplete={handleToggleComplete}
+                onAddTopic={handleAddTopic}
                 userRole={user.role}
               />
             ) : (
